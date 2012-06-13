@@ -17,8 +17,8 @@ from unittest import *
 from eval import purity
 from word_tokenize import tokenize
 
-# calculates probability from a categorical distribution
-def cd_probability(doc, pmf):
+# calculates log probability from a categorical distribution
+def cd_logprob(doc, pmf):
     logprob = 0.0
     for word in doc:
         if word in pmf:
