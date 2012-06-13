@@ -22,7 +22,7 @@ def cd_logprob(doc, pmf):
     logprob = 0.0
     for word in doc:
         if word in pmf:
-            logprob += log(pmf[word])
+            logprob += doc[word] * log(pmf[word])
         else:
             return 0.0
     return logprob
@@ -42,6 +42,10 @@ def doc2sufficient_stats(doc):
         sufficient_stats[x] += 1
         
     return sufficient_stats
+
+def mle_params(stats):
+    pmf = {}
+    
 
 # Sum two values in log space
 def log_sum( x, y ):
