@@ -99,17 +99,22 @@ def labels_from_files( files ):
 
 def filter_words( docs, N ):
 
+    # dict: word_i -> word_i count over corpus
     stats = defaultdict(int)
     for doc in docs:
         for x in doc: stats[x] += 1
 
+    # set of words only appearing once
     singletons = set([ word for word in stats if stats[word] == 1 ]) #use filter
     sorted_stats = sorted(stats.iteritems(), key=operator.itemgetter(1))
+    
+    # filter out top N words
     frequent = set([ item[0] for item in sorted_stats[-N:] ])
-#    print frequent
+    # print frequent
 
     badwords = frequent.union(singletons)
         
+    # filter outliers (singletons and top N words)
     newdocs = []
     for doc in docs:
         newdoc = filter(lambda x: not x in badwords, doc)
@@ -183,6 +188,10 @@ def main( argv=None ):
 
         # Load the data in memory
         files, docs = pickled_load_docs( args[0] )
+        
+        # print first 20 words from first 10 lines
+        # for i in range(10):
+        #     print docs[i][0:20]
 
         # Set the number of clusters
         K = int( args[1] )
