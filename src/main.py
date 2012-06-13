@@ -34,6 +34,14 @@ def rand_pmf(docs):
             if word not in pmf:
                 pmf[word] = random.random()
     return pmf
+    
+# takes document, outputs frequency per doc in word
+def doc2sufficient_stats(doc):
+    sufficient_stats = defaultdict(int)
+    for word in doc:
+        sufficient_stats[x] += 1
+        
+    return sufficient_stats
 
 # Sum two values in log space
 def log_sum( x, y ):
