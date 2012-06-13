@@ -22,7 +22,7 @@ def cd_logprob(doc, pmf):
     logprob = 0.0
     for word in doc:
         if word in pmf:
-            logprob += doc[word] * log(pmf[word])
+            logprob += log(pmf[word])
         else:
             return 0.0
     return logprob
@@ -36,16 +36,37 @@ def rand_pmf(docs):
     return pmf
     
 # takes document, outputs frequency per doc in word
-def doc2sufficient_stats(doc):
+def doc2stats(doc):
+    total_len = 0
     sufficient_stats = defaultdict(int)
     for word in doc:
-        sufficient_stats[x] += 1
-        
-    return sufficient_stats
+        sufficient_stats[word] += 1
+        total_len += 1
+    return (total_len, sufficient_stats)
 
-def mle_params(stats):
-    pmf = {}
-    
+def docs2stats(docs):
+    total_len = 0
+    stats = defaultdict(int)
+    for doc in docs:
+        (doclen, docstat) = doc2stats(doc)
+        for word in docstat:
+            stats[word] += docstat[word]
+            total_len += docstat[word]
+    return (total_len, stats)
+
+def get_mle_pmf(docs):
+    (tot_len, stats) = docs2stats(docs)
+    pmf = defaultdict(float)
+    for word in stats:
+        pmf[word] = stats[word] / float(tot_len)
+    return pmf
+
+def get_bayes_pmf(docs, alpha):
+    (tot_len, stats) = docs2stats(docs)
+    pmf = defaultdict(float)
+    for word in stats:
+        pmf[word] = (stats[word] + alpha) / (float(tot_len) + (len(stats) * alpha))
+    return pmf
 
 # Sum two values in log space
 def log_sum( x, y ):
@@ -236,7 +257,11 @@ def main( argv=None ):
         # TODO: Uncomment this when mixturemodel_em returns something
         #p = purity(labels, clustering)
         #print 'purity =',p
-        
+
+        pmf_mle = get_mle_pmf(docs)
+        pmf_bayes = get_bayes_pmf(docs, 0.00001)
+        print "mle is " + str(pmf_mle["atheism"])
+        print "bayes is " + str(pmf_bayes["atheism"])
         
     except Usage, err:
         print >>sys.stderr, err.msg
